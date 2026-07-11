@@ -34,4 +34,10 @@ public class AuditRequest {
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @Column(name = "report", columnDefinition = "TEXT")
+    private String report;
+
+    @Column(name = "vulnerabilities")
+    private Integer vulnerabilities;
 }

@@ -37,4 +37,27 @@ public class AuditService {
         
         return saved;
     }
+
+    public java.util.Optional<AuditRequest> getAudit(java.util.UUID id) {
+        return repository.findById(id);
+    }
+
+    @org.springframework.kafka.annotation.KafkaListener(topics = "audit-results", groupId = "orchestrator-group")
+    public void listenAuditResults(String message) {
+        try {
+            com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+            java.util.Map<String, Object> result = mapper.readValue(message, new com.fasterxml.jackson.core.type.TypeReference<java.util.Map<String, Object>>(){});
+            java.util.UUID auditId = java.util.UUID.fromString(result.get("auditId").toString());
+            
+            repository.findById(auditId).ifPresent(audit -> {
+                audit.setReport(result.get("report") != null ? result.get("report").toString() : null);
+                audit.setVulnerabilities(result.get("vulnerabilities") != null ? (Integer) result.get("vulnerabilities") : 0);
+                audit.setStatus(result.get("status").toString());
+                repository.save(audit);
+                System.out.println("Updated audit " + auditId + " with results.");
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const router = useRouter();
   const [projectName, setProjectName] = useState("");
   const [contractCode, setContractCode] = useState("");
   const [status, setStatus] = useState({ type: "", message: "" });
@@ -27,12 +29,9 @@ export default function Home() {
       }
 
       const data = await response.json();
-      setStatus({ type: "success", message: `Audit submitted! ID: ${data.auditId}` });
-      setProjectName("");
-      setContractCode("");
+      router.push(`/audit/${data.id}`);
     } catch (error) {
       setStatus({ type: "error", message: error.message || "An unexpected error occurred." });
-    } finally {
       setIsLoading(false);
     }
   };

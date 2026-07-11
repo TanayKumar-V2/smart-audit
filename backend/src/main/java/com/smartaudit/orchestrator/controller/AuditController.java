@@ -19,7 +19,14 @@ public class AuditController {
 
     @PostMapping("/submit")
     public ResponseEntity<?> submitAudit(@RequestBody AuditSubmitRequest request) {
-        auditService.createAuditRequest(request.getProjectName(), request.getContractCode());
-        return ResponseEntity.accepted().build();
+        var savedRequest = auditService.createAuditRequest(request.getProjectName(), request.getContractCode());
+        return ResponseEntity.ok(savedRequest);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getAudit(@PathVariable java.util.UUID id) {
+        return auditService.getAudit(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 }
