@@ -8,7 +8,9 @@ cd ..
 
 echo "Starting Backend..."
 cd backend
-mvn spring-boot:run &
+export JAVA_HOME="$HOME/.sdkman/candidates/java/current"
+export PATH="$JAVA_HOME/bin:$PATH"
+./mvnw spring-boot:run &
 BACKEND_PID=$!
 cd ..
 
